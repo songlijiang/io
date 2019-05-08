@@ -21,7 +21,7 @@ public class Client {
     public static void connect(){
         byte[] bytes = new byte[1024];
         try ( Socket socket = new Socket(serverIp,serverPort)){
-            socket.getOutputStream().write("hello word bye".getBytes(charset));
+            socket.getOutputStream().write("hello word".getBytes(charset));
             int size = socket.getInputStream().read(bytes);
             System.out.println(new String(Arrays.copyOfRange(bytes,0,size),charset));
         } catch (IOException e) {
@@ -30,7 +30,7 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 100; i++) {
             Client.connect();
         }
     }

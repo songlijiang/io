@@ -17,13 +17,13 @@ import java.util.Set;
  * @author songlijiang
  * @version 2019-05-06
  */
-public class Reactor implements Runnable {
+public class ReactorV3 implements Runnable {
 
     final private Selector selector;
     final private ServerSocketChannel serverSocket;
 
 
-    Reactor(int port) throws IOException {
+    ReactorV3(int port) throws IOException {
         selector = Selector.open();
         serverSocket = ServerSocketChannel.open();
         serverSocket.socket().bind(
@@ -108,7 +108,7 @@ public class Reactor implements Runnable {
         }
 
         private void process() {
-            String outputString = new Date()+ "received"+new String(inputByte,Constant.charset);
+            String outputString = new Date()+ " received "+new String(inputByte,Constant.charset);
             System.out.println(outputString);
             output.clear();
             output.put(outputString.getBytes(Constant.charset));
@@ -121,10 +121,10 @@ public class Reactor implements Runnable {
         @Override
         public void run() {
             try {
-                if (state == READING) {
+                if (state == READING && (sk.readyOps()&SelectionKey.OP_READ)>0) {
                     read();
                 }
-                else if (state == SENDING) {
+                if (state == SENDING && (sk.readyOps()&SelectionKey.OP_WRITE)>0) {
                     send();
                 }
             } catch (IOException ex) {
@@ -154,6 +154,8 @@ public class Reactor implements Runnable {
             output.flip();
             socket.write(output);
             if (outputIsComplete()) {
+                //unregister writer
+                sk.interestOps(sk.interestOps() & ~SelectionKey.OP_WRITE);
                 sk.cancel();
             }
         }
