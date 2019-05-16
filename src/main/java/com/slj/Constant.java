@@ -10,7 +10,7 @@ public class Constant {
 
     public   static  String serverIp="127.0.0.1";
 
-    public static int serverPort = 8853;
+    public static int serverPort = 8080;
 
     public static Charset charset = Charset.forName("utf-8");
 
