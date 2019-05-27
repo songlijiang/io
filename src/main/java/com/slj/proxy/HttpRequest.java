@@ -34,13 +34,16 @@ public class HttpRequest {
 
     private String origin;
 
+    private boolean finished;
+
     int getPort(){
         return this.url.getPort()!=-1?this.url.getPort():
             this.getUrl().getProtocol().equals("https")?443:80;
     }
 
     boolean isHttps(){
-        return this.url.getProtocol().equals("https");
+        return method.equalsIgnoreCase("CONNECT");
+        //return this.url.getProtocol().equals("https");
     }
 
 }

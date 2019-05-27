@@ -32,15 +32,18 @@ public class HttpProxyClientHandler extends ChannelInboundHandlerAdapter {
 
     private HttpRequest httpRequest;
 
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ByteBuf in = (ByteBuf) msg;
         String requestString = in.toString(Constant.charset);
         System.out.println("received from client \n"+requestString);
-        if(httpRequest!=null){
+
+
+        if(httpRequest!=null &&httpRequest.isFinished()){
             remoteChannel.writeAndFlush(msg);
             return;
         }
-        httpRequest = convertHttpRequest(requestString);
+
+        httpRequest = convertHttpRequest(in);
         clientChannel.config().setAutoRead(false); // disable AutoRead until remote connection is ready
 
         if (httpRequest.isHttps()) { // if https, respond 200 to create tunnel
@@ -67,18 +70,21 @@ public class HttpProxyClientHandler extends ChannelInboundHandlerAdapter {
 
 
 
-    @Override public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    @Override public void channelActive(ChannelHandlerContext ctx)  {
         clientChannel=ctx.channel();
     }
 
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)  {
         cause.printStackTrace();
         clientChannel.close();
     }
 
-    private HttpRequest convertHttpRequest(String httpRequestString) throws MalformedURLException {
+    private HttpRequest convertHttpRequest(ByteBuf in)  {
+
+        String httpRequestString = in.toString(Constant.charset);
+        in.readerIndex(in.writerIndex());
         String [] requestContext =  httpRequestString.split("\r\n");
         String urlContext = requestContext[0];
         String [] urlContexts = urlContext.split(" ");
@@ -117,7 +123,7 @@ public class HttpProxyClientHandler extends ChannelInboundHandlerAdapter {
                 e1.printStackTrace();
             }
         });
-
+        httpRequest.setFinished(true);
         return httpRequest;
     }
 
