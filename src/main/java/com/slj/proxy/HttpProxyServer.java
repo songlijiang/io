@@ -28,31 +28,8 @@ public class HttpProxyServer {
             }
     }
 
-        //new Thread(() -> {
-        //    EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        //    EventLoopGroup workerGroup = new NioEventLoopGroup();
-        //    try {
-        //        ServerBootstrap b = new ServerBootstrap();
-        //        b.group(bossGroup, workerGroup)
-        //            .channel(NioServerSocketChannel.class)
-        //            .handler(new LoggingHandler(LogLevel.DEBUG))
-        //            .childHandler(new ChannelInitializer<Channel>() {
-        //                @Override protected void initChannel(Channel channel) throws Exception {
-        //                    channel.pipeline().addLast(new HttpProxyClientHandler());
-        //                }
-        //            }).bind(Constant.serverPort).sync().channel().closeFuture().sync();
-        //    } catch (InterruptedException e) {
-        //
-        //    } finally {
-        //        bossGroup.shutdownGracefully();
-        //        workerGroup.shutdownGracefully();
-        //    }
-        //}).start();
 
-
-
-
-    public void run() throws InterruptedException {
+    private void run() throws InterruptedException {
 
         final HttpProxyClientHandler httpProxyClientHandler = new HttpProxyClientHandler();
         NioEventLoopGroup nioEventLoopGroup =new NioEventLoopGroup();
