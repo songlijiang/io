@@ -6,7 +6,12 @@
 
     <groupId>com.slj</groupId>
     <artifactId>io</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>proxy</module>
+        <module>example</module>
+    </modules>
 
     <dependencies>
 
