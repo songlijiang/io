@@ -1,7 +1,6 @@
-package com.slj.io.example.reactor;
+package com.slj.io.example.reactor.v2;
 
 
-import com.slj.io.example.ByteBufferUtils;
 import com.slj.io.example.Constant;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class Reactor implements Runnable {
     final private ServerSocketChannel serverSocket;
 
 
-    Reactor(int port) throws IOException {
+    public Reactor(int port) throws IOException {
         selector = Selector.open();
         serverSocket = ServerSocketChannel.open();
         serverSocket.socket().bind(
@@ -49,8 +48,9 @@ public class Reactor implements Runnable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
     }
-    void dispatch(SelectionKey k) {
+    private void dispatch(SelectionKey k) {
         Runnable r = (Runnable)(k.attachment());
         if (r != null) {
             r.run();
@@ -87,9 +87,7 @@ public class Reactor implements Runnable {
         ByteBuffer output = ByteBuffer.allocate(MAXOUT);
         static final int READING = 0, SENDING = 1;
         int state = READING;
-        private boolean outPutCompleted = false;
 
-        byte [] inputByte;
 
         Handler(Selector sel, SocketChannel c) throws IOException {
             socket = c;
@@ -99,21 +97,11 @@ public class Reactor implements Runnable {
             sel.wakeup();
         }
 
-        boolean inputIsComplete() {
-            inputByte = ByteBufferUtils.getArray(0,input.position(),input);
-            return true;
-        }
-
-        boolean outputIsComplete() {
-            return outPutCompleted;
-        }
-
-        private void process() {
+        private void process(byte [] inputByte) {
             String outputString = new Date()+ "received"+new String(inputByte,Constant.charset);
             System.out.println(outputString);
             output.clear();
             output.put(outputString.getBytes(Constant.charset));
-            outPutCompleted =true;
         }
 
         /**
@@ -138,13 +126,16 @@ public class Reactor implements Runnable {
          * @throws IOException
          */
         void read() throws IOException {
+            input.clear();
             socket.read(input);
-            if (inputIsComplete()) {
-                process();
-                state = SENDING;
-// Normally also do first write now
-                sk.interestOps(SelectionKey.OP_WRITE);
-            }
+            input.flip();
+            byte[] temp =new byte[input.limit()-input.position()];
+            input.get(temp,input.position(),input.limit());
+            //ignore package split case
+            process(temp);
+            state = SENDING;
+            // Normally also do first write now
+            sk.interestOps(SelectionKey.OP_WRITE);
         }
 
         /**
@@ -154,19 +145,10 @@ public class Reactor implements Runnable {
         void send() throws IOException {
             output.flip();
             socket.write(output);
-            if (outputIsComplete()) {
-                sk.cancel();
-            }
+            sk.cancel();
         }
 
     }
 
 
 }
-
-/*
-Alternatively, use explicit SPI provider:
-SelectorProvider p = SelectorProvider.provider();
-selector = p.openSelector();
-serverSocket = p.openServerSocketChannel();
-*/

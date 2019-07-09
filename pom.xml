@@ -11,6 +11,7 @@
     <modules>
         <module>proxy</module>
         <module>example</module>
+        <module>rpc</module>
     </modules>
 
     <dependencies>

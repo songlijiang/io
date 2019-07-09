@@ -26,7 +26,7 @@ public class EchoServer {
     }
 
 
-    public void run() throws InterruptedException {
+    private void run() throws InterruptedException {
 
         final EchoServerHandler echoServerHandler = new EchoServerHandler();
         NioEventLoopGroup nioEventLoopGroup =new NioEventLoopGroup();
@@ -46,6 +46,7 @@ public class EchoServer {
                     });
 
             ChannelFuture channelFuture = serverBootstrap.bind().sync();
+            System.out.println("netty server started");
             channelFuture.channel().closeFuture().sync();
         } finally {
             nioEventLoopGroup.shutdownGracefully().sync();

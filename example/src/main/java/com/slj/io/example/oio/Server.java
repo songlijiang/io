@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
  public  class Server implements Runnable {
 
-    private static final int PORT =8082;
+
 
     private static final int MAX_INPUT =1024;
 
@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
     @Override
     public void run() {
         try {
-            ServerSocket ss = new ServerSocket(PORT);
+            ServerSocket ss = new ServerSocket(Constant.serverPort);
             while (!Thread.interrupted()){
                 //new Thread(new Handler(ss.accept())).start();
                 executor.execute(new Handler(ss.accept()));

@@ -1,4 +1,4 @@
-package com.slj.io.example.reactor;
+package com.slj.io.example.reactor.v1;
 
 import com.slj.io.example.Constant;
 
@@ -6,11 +6,11 @@ import java.io.IOException;
 
 /**
  * @author songlijiang
- * @version 2019-05-06
+ * @version 2019/6/24 13:49
  */
 public class Bootstrap {
 
     public static void main(String[] args) throws IOException {
-        new Thread(new ReactorV3(Constant.serverPort)).start();
+        new Thread(new Reactor(Constant.serverPort)).start();
     }
 }

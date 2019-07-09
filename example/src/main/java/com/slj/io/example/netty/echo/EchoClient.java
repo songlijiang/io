@@ -19,13 +19,15 @@ public class EchoClient {
     public static void main(String[] args) {
 
         try {
-            new EchoClient().start();
+            for (int i = 0; i < 1000; i++) {
+                new EchoClient().start();
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public  void start () throws InterruptedException {
+    private void start() throws InterruptedException {
         NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
 
         try {
